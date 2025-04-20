@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Problem Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        select, button {
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            background: white;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .question-container {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #eee;
+        }
+
+        .question {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .solution {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+            display: none;
+            white-space: pre-wrap;
+        }
+
+        .solution.show {
+            display: block;
+        }
+
+        .toggle-btn {
+            background: #27ae60;
+            margin-top: 15px;
+        }
+
+        .toggle-btn:hover {
+            background: #219a52;
+        }
+
+        .difficulty-selector {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .difficulty-btn {
+            padding: 8px 15px;
+            border-radius: 4px;
+            background: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            cursor: pointer;
+        }
+
+        .difficulty-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Math Problem Generator</h1>
+        
+        <div class="controls">
+            <select id="problemType">
+                <option value="arithmetic">Arithmetic</option>
+                <option value="algebra">Algebra</option>
+                <option value="fractions">Fractions</option>
+                <option value="geometry">Geometry</option>
+            </select>
+            
+            <div class="difficulty-selector">
+                <div class="difficulty-btn active" data-level="easy">Easy</div>
+                <div class="difficulty-btn" data-level="medium">Medium</div>
+                <div class="difficulty-btn" data-level="hard">Hard</div>
+            </div>
+
+            <button onclick="generateProblem()">Generate New Problem</button>
+        </div>
+
+        <div class="question-container">
+            <div class="question" id="questionDisplay"></div>
+            <button class="toggle-btn" onclick="toggleSolution()">Show Solution</button>
+            <div class="solution" id="solutionDisplay"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentDifficulty = 'easy';
+
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentDifficulty = btn.dataset.level;
+                generateProblem();
+            });
+        });
+
+        function generateProblem() {
+            const type = document.getElementById('problemType').value;
+            let question = '';
+            let solution = '';
+
+            switch(type) {
+                case 'arithmetic':
+                    [question, solution] = generateArithmeticProblem();
+                    break;
+                case 'algebra':
+                    [question, solution] = generateAlgebraProblem();
+                    break;
+                case 'fractions':
+                    [question, solution] = generateFractionProblem();
+                    break;
+                case 'geometry':
+                    [question, solution] = generateGeometryProblem();
+                    break;
+            }
+
+            document.getElementById('questionDisplay').textContent = question;
+            document.getElementById('solutionDisplay').textContent = solution;
+            document.getElementById('solutionDisplay').classList.remove('show');
+        }
+
+        function generateArithmeticProblem() {
+            const operations = ['+', '-', '×', '÷'];
+            const op = operations[Math.floor(Math.random() * 4)];
+            let a, b, result;
+            
+            switch(currentDifficulty) {
+                case 'easy':
+                    a = Math.floor(Math.random() * 50) + 1;
+                    b = Math.floor(Math.random() * 50) + 1;
+                    break;
+                case 'medium':
+                    a = Math.floor(Math.random() * 100) + 50;
+                    b = Math.floor(Math.random() * 100) + 50;
+                    break;
+                case 'hard':
+                    a = Math.floor(Math.random() * 500) + 100;
+                    b = Math.floor(Math.random() * 500) + 100;
+                    break;
+            }
+
+            switch(op) {
+                case '+':
+                    result = a + b;
+                    break;
+                case '-':
+                    [a, b] = [Math.max(a, b), Math.min(a, b)];
+                    result = a - b;
+                    break;
+                case '×':
+                    result = a * b;
+                    break;
+                case '÷':
+                    b = Math.floor(Math.random() * 12) + 1;
+                    a = b * (Math.floor(Math.random() * 15) + 1);
+                    result = a / b;
+                    break;
+            }
+
+            const question = `Solve: ${a} ${op} ${b}`;
+            const solution = `Step 1: ${a} ${op} ${b}\nStep 2: = ${result}`;
+            
+            return [question, solution];
+        }
+
+        function generateAlgebraProblem() {
+            let xValue, equation, solution;
+            
+            const difficultySettings = {
+                easy: { maxCoefficient: 5, maxConstant: 10 },
+                medium: { maxCoefficient: 10, maxConstant: 20 },
+                hard: { maxCoefficient: 15, maxConstant: 30 }
+            };
+
+            const { maxCoefficient, maxConstant } = difficultySettings[currentDifficulty];
+            
+            const coefficient = Math.floor(Math.random() * maxCoefficient) + 1;
+            const constant = Math.floor(Math.random() * maxConstant) + 1;
+            xValue = Math.floor(Math.random() * 10) + 1;
+            const result = coefficient * xValue + constant;
+
+            equation = `${coefficient}x + ${constant} = ${result}`;
+            solution = `Step 1: Subtract ${constant} from both sides\n` +
+                       `        ${coefficient}x = ${result - constant}\n` +
+                       `Step 2: Divide both sides by ${coefficient}\n` +
+                       `        x = ${(result - constant)/coefficient}`;
+
+            return [equation, solution];
+        }
+
+        function toggleSolution() {
+            const solution = document.getElementById('solutionDisplay');
+            solution.classList.toggle('show');
+            document.querySelector('.toggle-btn').textContent = 
+                solution.classList.contains('show') ? 'Hide Solution' : 'Show Solution';
+        }
+
+        // Additional problem generators (fractions and geometry) can be expanded here
+
+        // Generate initial problem when page loads
+        generateProblem();
+    </script>
+</body>
+</html>
